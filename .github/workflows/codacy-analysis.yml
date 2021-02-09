@@ -1,0 +1,159 @@
+# This workflow checks out code, performs a Codacy security scan
+# and integrates the results with the
+# GitHub Advanced Security code scanning feature.  For more information on
+# the Codacy security scan action usage and parameters, see
+# https://github.com/codacy/codacy-analysis-cli-action.
+# For more information on Codacy Analysis CLI in general, see
+# https://github.com/codacy/codacy-analysis-cli.
+
+name: Codacy Security Scan
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  codacy-security-scan:
+    name: Codacy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Execute Codacy Analysis CLI and generate a SARIF output with the security issues identified during the analysis
+      - name: Run Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@1.1.0
+        with:
+          # Check https://github.com/codacy/codacy-analysis-cli#project-token to get your project token from your Codacy repository
+          # You can also omit the token and run the tools that support default configurations
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          verbose: true
+          output: results.sarif
+          format: sarif
+          # Adjust severity of non-security issues
+          gh-code-scanning-compat: true
+          # Force 0 exit code to allow SARIF file generation
+          # This will handover control about PR rejection to the GitHub side
+          max-allowed-issues: 2147483647
+
+      # Upload the SARIF file generated in the previous step
+      - name: Upload SARIF results file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
+
+- name: Setup .NET Core SDK
+  uses: actions/setup-dotnet@v1.7.2
+  with:
+    # SDK version to use. Examples: 2.2.104, 3.1, 3.1.x
+    dotnet-version: # optional
+    # Optional package source for which to set up authentication. Will consult any existing NuGet.config in the root of the repo and provide a temporary NuGet.config using the NUGET_AUTH_TOKEN environment variable as a ClearTextPassword
+    source-url: # optional
+    # Optional OWNER for using packages from GitHub Package Registry organizations/users other than the current repository's owner. Only used if a GPR URL is also provided in source-url
+    owner: # optional
+    # Optional NuGet.config location, if your NuGet.config isn't located in the root of the repo.
+    config-file: # optional
+    - name: Cache
+  uses: actions/cache@v2.1.4
+  with:
+    # A list of files, directories, and wildcard patterns to cache and restore
+    path: 
+    # An explicit key for restoring and saving the cache
+    key: 
+    # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+    restore-keys: # optional
+    # The chunk size used to split up large files during upload, in bytes
+    upload-chunk-size: # optional
+    - name: Cache
+  uses: actions/cache@v2.1.4
+  with:
+    # A list of files, directories, and wildcard patterns to cache and restore
+    path: 
+    # An explicit key for restoring and saving the cache
+    key: 
+    # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+    restore-keys: # optional
+    # The chunk size used to split up large files during upload, in bytes
+    upload-chunk-size: # optional
+    - name: Setup Go environment
+  uses: actions/setup-go@v2.1.3
+  with:
+    # The Go version to download (if necessary) and use. Supports semver spec and ranges.
+    go-version: # optional
+    # Whether to download only stable versions
+    stable: # optional, default is true
+    # Used to pull node distributions from go-versions.  Since there's a default, this is typically not supplied by the user.
+    token: # optional, default is ${{ github.token }}
+    - name: Setup Go environment
+  uses: actions/setup-go@v2.1.3
+  with:
+    # The Go version to download (if necessary) and use. Supports semver spec and ranges.
+    go-version: # optional
+    # Whether to download only stable versions
+    stable: # optional, default is true
+    # Used to pull node distributions from go-versions.  Since there's a default, this is typically not supplied by the user.
+    token: # optional, default is ${{ github.token }}
+    - name: Code Inspector GitHub action
+  # You may pin to the exact commit or the version.
+  # uses: codeinspectorio/github-action@01c818be303e2c4bcec991ca1c51feab753a1e2a
+  uses: codeinspectorio/github-action@v1
+  with:
+    # Token to checkout the repository.
+    repo_token: 
+    # Access key on Code Inspector
+    code_inspector_access_key: 
+    # Secret key on Code Inspector
+    code_inspector_secret_key: 
+    # Minimum grade. Valid options are EXCELLENT, GOOD, NEUTRAL, WARNING, CRITICAL. Leave blank to ignore.
+    min_quality_grade: # default is 
+    # Minimum quality score from 0 (worst) to 100 (best)
+    min_quality_score: # default is 0
+    # Maximum defect rate per line of code (e.g. 0.01 for 1 defect per 100 lines of code). Leave 0 to ignore.
+    max_defects_rate: # default is 0
+    # Maximum number of complex functions rate (e.g. number of complex functions / number of functions). Leave 0 to ignore.
+    max_complex_functions_rate: # default is 0
+    # Maximum number of long functions rate (e.g. number of long functions / number of functions). Leave 0 to ignore.
+    max_long_functions_rate: # default is 0
+    # Project on code inspector. Will use the preferences of this analysis. Leave blank and no preferences are used
+    project_name: # default is 
+    # Timeout before giving up (in case analysis takes too long). Default is 10 minutes
+    max_timeout_sec: # - name: Notify on pull request
+  # You may pin to the exact commit or the version.
+  # uses: vipulbhj/pull-request-notifier@0587e22641312e694b5781377d5f24ef3309cc49
+  uses: vipulbhj/pull-request-notifier@v0.2.0
+  with:
+    # your mobile number
+    mobile_no: 
+    # your aws key id
+    aws_key_id: 
+    # your aws key access
+    aws_key_access: 
+    default is 600
+    - name: Notify on pull request
+  # You may pin to the exact commit or the version.
+  # uses: vipulbhj/pull-request-notifier@0587e22641312e694b5781377d5f24ef3309cc49
+  uses: vipulbhj/pull-request-notifier@v0.2.0
+  with:
+    # your mobile number
+    mobile_no: 
+    # your aws key id
+    aws_key_id: 
+    # your aws key access
+    aws_key_access: 
+    
+    - name: prow-github-actions
+  # You may pin to the exact commit or the version.
+  # uses: jpmcb/prow-github-actions@82045a1c6942e73287fce8f5bbc188a4036d2fbe
+  uses: jpmcb/prow-github-actions@v1.1.2
+  with:
+    # Token used by prow actions to accomplish jobs and tasks. May be a bot user access token or the limited scope Github token
+    github-token: 
+    # Comment keywords/commands to look for. Space delimited. Expect commands on own line.
+    prow-commands: # optional
+    # The jobs to automatically run on event. Space delimited. Expect commands on own line.
+    jobs: # optional
+    # Strategy for Prow-github-actions to take when merging a pull request using the lgtm cron-job. Can be 'squash', 'rebase', or 'merge'. Defaults to 'merge'
+    merge-method: # optional
